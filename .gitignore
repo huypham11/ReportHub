@@ -1,0 +1,14 @@
+## .NET
+bin/
+obj/
+*.user
+
+## Visual Studio
+.vs/
+
+## Claude Code local session data
+.claude/
+
+## OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,6 @@
+@RHApi_HostAddress = http://localhost:5123
+
+GET {{RHApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

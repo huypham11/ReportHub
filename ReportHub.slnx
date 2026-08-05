@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="RHApi/RHApi.csproj" />
+  <Project Path="RHApplication/RHApplication.csproj" />
+  <Project Path="RHDomain/RHDomain.csproj" />
+  <Project Path="RHInfrastructure/RHInfrastructure.csproj" />
+</Solution>
