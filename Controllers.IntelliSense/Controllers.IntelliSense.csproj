@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Project "ảo": KHÔNG được RHApi/RHInfrastructure reference, KHÔNG deploy, KHÔNG được
+    ControllerLoader dùng tới - ControllerLoader tự đọc + compile source .cs trong
+    Controllers/ bằng Roslyn lúc runtime, không phụ thuộc DLL build ra từ đây.
+    Project này chỉ tồn tại để IDE có project context -> có IntelliSense khi sửa file
+    trong Controllers/Filter, Controllers/Grid (những file đó không thuộc project build nào).
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IsPackable>false</IsPackable>
+    <NoWarn>CS0105</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Controllers/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../RHDomain/RHDomain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
 using RHDomain.Controllers;
 
-public partial class TestController2
+public partial class RPT_TEST_2
 {
     public override void ConfigureGrid(FieldBuilder builder)
     {

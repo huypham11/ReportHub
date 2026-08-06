@@ -3,4 +3,5 @@
   <Project Path="RHApplication/RHApplication.csproj" />
   <Project Path="RHDomain/RHDomain.csproj" />
   <Project Path="RHInfrastructure/RHInfrastructure.csproj" />
+  <Project Path="Controllers.IntelliSense/Controllers.IntelliSense.csproj" />
 </Solution>

@@ -19,12 +19,12 @@ builder.Services.AddDbContext<SourceDbContext>(opt =>
 //service
 builder.Services.AddScoped<ISalesReportService, SalesReportService>();
 
-//Dynamic Controller (Roslyn) - khai báo report/dir/doc bằng file .cs trong Controllers-Runtime
+//Dynamic Controller (Roslyn) - khai báo report/dir/doc bằng file .cs trong Controllers
 // Thư mục này nằm ở gốc solution (ngang hàng RHApi/RHApplication/RHInfrastructure/RHDomain),
 // không thuộc project nào - đây là nơi khai báo "dữ liệu", không phải code core.
 // Dùng thư mục thật (không phải bin/output) để sửa/lưu file là nhận ngay.
 var controllersRuntimeFolder = Path.GetFullPath(
-    Path.Combine(builder.Environment.ContentRootPath, "..", "Controllers-Runtime"));
+    Path.Combine(builder.Environment.ContentRootPath, "..", "Controllers"));
 var controllerLoader = new ControllerLoader(controllersRuntimeFolder);
 var loadErrors = controllerLoader.LoadAll();
 if (loadErrors.Count > 0)

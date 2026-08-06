@@ -3,14 +3,14 @@
 ## Mục tiêu
 
 Xây dựng **core API** cho phép khai báo 1 báo cáo mới bằng cách **chỉ tạo file `.cs`** trong
-thư mục `Controllers-Runtime/`, không cần build lại hay sửa code trong 4 project chính
+thư mục `Controllers/`, không cần build lại hay sửa code trong 4 project chính
 (`RHApi`, `RHApplication`, `RHDomain`, `RHInfrastructure`).
 
 ## Kiến trúc cuối cùng
 
 ```
 ReportHub/
-├── Controllers-Runtime/          <- KHÔNG thuộc project nào, chỉ chứa khai báo report
+├── Controllers/                  <- KHÔNG thuộc project nào, chỉ chứa khai báo report
 │   ├── Filter/{code}.cs          <- field lọc + bố cục (View) + Processing (gọi proc/SQL)
 │   └── Grid/{code}.cs            <- cột hiển thị kết quả (optional)
 ├── RHDomain/Controllers/         <- hợp đồng chung (POCO, không phụ thuộc Dapper/SQL)
@@ -38,7 +38,7 @@ ReportHub/
 ## Các quyết định thiết kế quan trọng
 
 1. **Compile runtime bằng Roslyn** (`Microsoft.CodeAnalysis.CSharp`), không cần rebuild solution.
-   `FileSystemWatcher` theo dõi `Controllers-Runtime/`, tự compile lại khi file đổi (bắt cả
+   `FileSystemWatcher` theo dõi `Controllers/`, tự compile lại khi file đổi (bắt cả
    `Changed`/`Created`/`Renamed` — nhiều editor lưu file bằng cách rename đè, không phát sinh
    `Changed`).
 

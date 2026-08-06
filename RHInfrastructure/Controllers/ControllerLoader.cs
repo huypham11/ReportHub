@@ -8,7 +8,7 @@ namespace RHInfrastructure.Controllers;
 
 /// <summary>
 /// Load controller khai báo bằng file .cs, tổ chức theo LOẠI (không theo controller):
-///   Controllers-Runtime/
+///   Controllers/
 ///     Filter/{code}.cs   - bắt buộc: field lọc + bố cục (View) + Processing (gọi proc lấy data)
 ///     Grid/{code}.cs     - optional: cột hiển thị
 /// {code} (không có phần mở rộng) chính là mã controller, không cần khai báo lại trong code.
