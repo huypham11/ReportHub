@@ -15,19 +15,26 @@ public class ExecutionContext
     public List<Dictionary<string, object?>> Rows { get; set; } = new();
 
     // Do tầng Infrastructure gán vào lúc build context (Domain không biết Dapper/SqlClient là gì).
-    public Func<string, object?[], Task<List<Dictionary<string, object?>>>>? ProcedureExecutor { get; set; }
     public Func<string, object?[], Task<List<Dictionary<string, object?>>>>? SqlExecutor { get; set; }
+    public Func<string, Dictionary<string, object?>, Task<List<List<Dictionary<string, object?>>>>>? ScriptExecutor { get; set; }
 
     public T? GetParam<T>(string name)
         => Parameters.TryGetValue(name, out var v) && v is not null ? (T)v : default;
 
     public void AddError(string field, string message) => Errors.Add((field, message));
 
-    public Task<List<Dictionary<string, object?>>> CallProcedure(string procedureName, params object?[] values)
+    /// <summary>
+    /// Chạy 1 SCRIPT SQL nhiều câu lệnh (DECLARE, nhiều SELECT, EXEC proc...) viết nguyên khối -
+    /// cách DUY NHẤT để khai Processing, giống command event="Processing" của FBO. Tham số đặt
+    /// tên THEO ĐÚNG TÊN FIELD Filter đã khai (VD field "FromDate" -> viết @FromDate trong script) -
+    /// tự động lấy hết từ ctx.Parameters, không cần truyền tay. Đọc HẾT các bảng kết quả, bảng
+    /// đánh số từ 0 theo đúng thứ tự script SELECT/EXEC - tự chọn 1 bảng gán vào ctx.Rows.
+    /// </summary>
+    public Task<List<List<Dictionary<string, object?>>>> RunScript(string sqlScript)
     {
-        if (ProcedureExecutor == null)
-            throw new InvalidOperationException("ProcedureExecutor chưa được cấu hình cho ExecutionContext.");
-        return ProcedureExecutor(procedureName, values);
+        if (ScriptExecutor == null)
+            throw new InvalidOperationException("ScriptExecutor chưa được cấu hình cho ExecutionContext.");
+        return ScriptExecutor(sqlScript, Parameters);
     }
 
     /// <summary>

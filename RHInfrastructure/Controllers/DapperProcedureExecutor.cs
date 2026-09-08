@@ -4,35 +4,37 @@ using Microsoft.Data.SqlClient;
 
 namespace RHInfrastructure.Controllers;
 
-/// <summary>
-/// Gọi proc theo tham số VỊ TRÍ (không theo tên) - EXEC {proc} @p0, @p1, @p2...
-/// SQL Server tự khớp @p0, @p1... vào đúng tham số proc theo THỨ TỰ khai báo, bất kể tên
-/// biến trong proc là gì. Vẫn tham số hoá đầy đủ qua DynamicParameters - không SQL injection.
-/// </summary>
 public class DapperProcedureExecutor
 {
     private readonly string _connectionString;
     public DapperProcedureExecutor(string connectionString) => _connectionString = connectionString;
 
-    public async Task<List<Dictionary<string, object?>>> ExecuteAsync(string procedureName, object?[] values)
+    /// <summary>
+    /// Chạy 1 SCRIPT SQL nhiều câu lệnh (DECLARE, nhiều SELECT, EXEC proc...) do report tự viết
+    /// nguyên khối - giống hệt cách command event="Processing" của FBO dùng 1 khối CDATA. Tham
+    /// số đặt tên THEO ĐÚNG TÊN FIELD Filter (VD field "FromDate" -> viết @FromDate trong script),
+    /// không phải @p0/@p1 vị trí như các hàm khác - tự nhiên hơn khi script dài, nhiều tham số.
+    /// Đọc HẾT các bảng kết quả (script có thể SELECT/EXEC nhiều lần), bảng đánh số từ 0 theo
+    /// đúng thứ tự xuất hiện trong script.
+    /// </summary>
+    public async Task<List<List<Dictionary<string, object?>>>> ExecuteScriptMultipleAsync(
+        string sqlScript, Dictionary<string, object?> namedParams)
     {
         using var conn = new SqlConnection(_connectionString);
 
         var dynParams = new DynamicParameters();
-        var placeholders = new string[values.Length];
-        for (var i = 0; i < values.Length; i++)
+        foreach (var (name, value) in namedParams)
+            dynParams.Add(name, value);
+
+        using var reader = await conn.ExecuteReaderAsync(sqlScript, dynParams, commandType: CommandType.Text);
+
+        var tables = new List<List<Dictionary<string, object?>>>();
+        do
         {
-            var name = "p" + i;
-            dynParams.Add(name, values[i]);
-            placeholders[i] = "@" + name;
-        }
+            tables.Add(ReadRows(reader));
+        } while (reader.NextResult());
 
-        var sql = values.Length > 0
-            ? $"EXEC {procedureName} {string.Join(", ", placeholders)}"
-            : $"EXEC {procedureName}";
-
-        using var reader = await conn.ExecuteReaderAsync(sql, dynParams, commandType: CommandType.Text);
-        return ReadRows(reader);
+        return tables;
     }
 
     /// <summary>

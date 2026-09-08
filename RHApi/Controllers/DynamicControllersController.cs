@@ -44,13 +44,13 @@ namespace RHApi.Controllers
             var c = _loader.Get(code);
             if (c == null) return NotFound($"Controller '{code}' chưa được load.");
 
-            // ProcedureExecutor phải được gắn thật ở đây - default value của field có thể
+            // SqlExecutor phải được gắn thật ở đây - default value của field có thể
             // cần query SQL Server (VD: lấy kỳ hiện tại, tỷ giá...), không chỉ tính C# thuần.
             var ctx = new RHDomain.Controllers.ExecutionContext
             {
                 CurrentUser = new CurrentUserInfo { BranchId = 1 }, // TODO: lấy CurrentUser thật
-                ProcedureExecutor = _executor.ExecuteAsync,
-                SqlExecutor = _executor.ExecuteSqlAsync
+                SqlExecutor = _executor.ExecuteSqlAsync,
+                ScriptExecutor = _executor.ExecuteScriptMultipleAsync
             };
 
             var fields = new List<object>();
@@ -85,10 +85,33 @@ namespace RHApi.Controllers
                 g.Field,
                 g.Label,
                 Type = g.Type.ToString(),
-                g.Format
+                g.Format,
+                g.Width,
+                Align = g.Align?.ToString()
             });
 
             return Ok(columns);
+        }
+
+        // Nội dung hiển thị của modal Filter + banner màn Grid - filterTitle khai ở
+        // ConfigureFilter, gridTitle/subtitleTemplate khai ở ConfigureGrid, độc lập
+        // nhau. null nghĩa là report không khai, FE tự dùng giá trị mặc định (label
+        // ở menu / template liệt kê hết field Filter).
+        [HttpGet("{code}/banner")]
+        public IActionResult GetBanner(string code)
+        {
+            var errorResult = CheckLoadError(code);
+            if (errorResult != null) return errorResult;
+
+            var c = _loader.Get(code);
+            if (c == null) return NotFound($"Controller '{code}' chưa được load.");
+
+            return Ok(new
+            {
+                filterTitle = c.Fields.FilterTitle,
+                gridTitle = c.Fields.GridTitle,
+                subtitleTemplate = c.Fields.SubtitleTemplate
+            });
         }
 
         [HttpGet("{code}/view")]

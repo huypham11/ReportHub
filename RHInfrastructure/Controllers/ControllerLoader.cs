@@ -138,6 +138,12 @@ public class ControllerLoader
         var filterBuilder = new FieldBuilder();
         instance.ConfigureFilter(filterBuilder);
 
+        // ProcessingBuilder riêng, KHÔNG phải FieldBuilder - Processing không liên quan
+        // gì đến việc khai field (đúng góp ý: trước đây field.OnProcessing/field.Process
+        // nằm chung FieldBuilder dù chẳng khai field nào cả).
+        var processingBuilder = new ProcessingBuilder();
+        instance.ConfigureProcessing(processingBuilder);
+
         var gridBuilder = new FieldBuilder();
         instance.ConfigureGrid(gridBuilder);
 
@@ -147,8 +153,13 @@ public class ControllerLoader
         var fields = new FieldBuilder();
         fields.Filters.AddRange(filterBuilder.Filters);
         fields.Grids.AddRange(gridBuilder.Grids);
-        fields.CheckingHooks.AddRange(filterBuilder.CheckingHooks);
-        fields.SetProcessingHook(filterBuilder.ProcessingHook);
+        fields.CheckingHooks.AddRange(processingBuilder.CheckingHooks);
+        fields.SetProcessingHook(processingBuilder.ProcessingHook);
+        fields.SetSubtitleTemplate(gridBuilder.SubtitleTemplate);
+        // .Title(...) gọi ở ConfigureFilter và ConfigureGrid là 2 title độc lập -
+        // đọc riêng TitleOverride của từng builder, không dùng chung.
+        fields.SetFilterTitle(filterBuilder.TitleOverride);
+        fields.SetGridTitle(gridBuilder.TitleOverride);
 
         _cache[code] = new CompiledController
         {

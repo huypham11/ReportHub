@@ -31,8 +31,8 @@ public class ObjectExecutionService
         {
             Parameters = rawParameters,
             CurrentUser = currentUser,
-            ProcedureExecutor = _executor.ExecuteAsync,
-            SqlExecutor = _executor.ExecuteSqlAsync
+            SqlExecutor = _executor.ExecuteSqlAsync,
+            ScriptExecutor = _executor.ExecuteScriptMultipleAsync
         };
 
         // 1. Áp default value cho field nào FE không gửi lên (có thể phải query SQL Server)

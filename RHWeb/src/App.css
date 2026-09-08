@@ -1,0 +1,267 @@
+/* Phần lớn styling (Button/Input/Select/Card) đã do antd đảm nhiệm qua
+   ConfigProvider ở main.tsx (dark algorithm) - file này chỉ còn layout khung
+   trang và phần riêng của AG Grid (antd không styling được nội dung AG Grid).
+   Màu ở đây lấy tay từ theme.ts vì CSS thường không import được TS constants. */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Layout ngoài cùng cố định chiều cao = viewport (không phải min-height) để
+   toàn bộ chuỗi con bên dưới (Content -> Card -> ResultGrid) có thể flex:1
+   kéo dài chính xác đến hết trang, thay vì tràn theo nội dung. */
+.app-layout {
+  height: 100vh;
+  background: #141824; /* DARK_BG */
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  flex: 0 0 auto;
+  background: #1f2430; /* DARK_SURFACE */
+  border-bottom: 1px solid #333a4a; /* DARK_BORDER */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0 24px;
+  height: auto;
+  line-height: normal;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.app-title {
+  margin: 0 !important;
+  color: #e6e8eb !important; /* DARK_TEXT */
+}
+
+/* Layout giữa (Sider + Content) chiếm hết phần còn lại sau header. */
+.app-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.app-sider {
+  background: #1f2430 !important; /* DARK_SURFACE */
+  border-right: 1px solid #333a4a; /* DARK_BORDER */
+}
+
+.nav-menu {
+  border-inline-end: none !important;
+  padding: 12px 0;
+  background: transparent !important;
+}
+
+.app-content {
+  padding: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.load-error {
+  margin-bottom: 16px;
+  white-space: pre-wrap;
+}
+
+/* Card của màn Grid kéo dài hết phần còn lại của app-content - Card của màn
+   Filter (chỉ có class "panel") không set flex nên vẫn giữ chiều cao tự nhiên. */
+.panel-fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Khung bọc ngoài Card của màn Grid - cho phép kéo cạnh phải để chỉnh độ rộng
+   (ResizableWidthBox.tsx). Cần position:relative để đặt handle tuyệt đối. */
+.resizable-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 14px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background: rgba(79, 158, 255, 0.25); /* BRAND_COLOR mờ - phản hồi hover/kéo */
+}
+
+/* Banner đầu màn Grid: tên report + tóm tắt điều kiện lọc đã dùng (giống dòng
+   "Từ ngày ... đến ngày ..." của FBO), tách khỏi phần bảng bằng border-bottom. */
+.report-banner {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333a4a; /* DARK_BORDER */
+}
+
+.report-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #e6e8eb; /* DARK_TEXT */
+}
+
+.report-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #9aa3b2; /* DARK_TEXT_MUTED */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-body {
+  flex: 1;
+  min-height: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hint {
+  color: #9aa3b2; /* DARK_TEXT_MUTED */
+  font-style: italic;
+}
+
+/* ResultGrid: thanh phân trang cố định trên đầu, phần bảng chiếm hết chỗ còn lại. */
+.result-grid-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.grid-pagination-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grid-toolbar-left {
+  display: flex;
+  gap: 8px;
+}
+
+.result-grid-body {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Modal Filter (FilterModal.tsx) - overlay full màn hình, box tự dựng vì cần
+   resize + double-click viền để phóng to (antd Modal không hỗ trợ sẵn). */
+.filter-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.filter-modal-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #1f2430; /* DARK_SURFACE */
+  border: 1px solid #333a4a; /* DARK_BORDER */
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.filter-modal-box.maximized {
+  width: calc(100vw - 40px) !important;
+  height: calc(100vh - 40px) !important;
+}
+
+.filter-modal-header {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border-bottom: 1px solid #333a4a; /* DARK_BORDER */
+  user-select: none;
+}
+
+.filter-modal-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #e6e8eb; /* DARK_TEXT */
+}
+
+.filter-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px;
+}
+
+.filter-modal-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid #333a4a; /* DARK_BORDER */
+}
+
+.modal-resize-edge {
+  position: absolute;
+}
+
+.modal-resize-right {
+  top: 0;
+  right: -4px;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+.modal-resize-bottom {
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.modal-resize-corner {
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+}
+
+.modal-resize-edge:hover,
+.modal-resize-edge:active {
+  background: rgba(79, 158, 255, 0.3); /* BRAND_COLOR mờ - phản hồi hover/kéo */
+}
+
+/* AG Grid header dùng flexbox cho label - text-align CSS không có tác dụng,
+   phải set justify-content. Header luôn căn giữa, không phụ thuộc Align của
+   nội dung cell (khai ở Controllers/Grid/{code}.cs). */
+.ag-theme-reporthub .header-align-center .ag-header-cell-label {
+  justify-content: center;
+}

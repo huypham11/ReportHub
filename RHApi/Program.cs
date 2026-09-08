@@ -12,6 +12,16 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// FE (Vite dev server) chạy khác port với API - cần CORS ở môi trường dev.
+const string DevCorsPolicy = "DevCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(DevCorsPolicy, policy =>
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 //DbContext
 builder.Services.AddDbContext<SourceDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("Source")));
@@ -36,6 +46,8 @@ builder.Services.AddSingleton(controllerLoader);
 
 builder.Services.AddSingleton(new DapperProcedureExecutor(builder.Configuration.GetConnectionString("Source")!));
 builder.Services.AddScoped<ObjectExecutionService>();
+
+builder.Services.AddSingleton(new RHInfrastructure.Menu.MenuService(builder.Configuration.GetConnectionString("Source")!));
 
 var app = builder.Build();
 
@@ -79,6 +91,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(DevCorsPolicy);
+}
 
 app.UseAuthorization();
 

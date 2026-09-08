@@ -4,8 +4,6 @@ using RHDomain.Controllers;
 
 public partial class TestController : ControllerDefinitionBase
 {
-    public TestController() => Name = "Report test";
-
     public override void ConfigureFilter(FieldBuilder field)
     {
         var date1 = new DateTime(2026,1,1);
@@ -23,10 +21,15 @@ public partial class TestController : ControllerDefinitionBase
 
         field.Filter("Test", "Test ngày", FieldType.Date)
                .DefaultValue(ctx => date1);
+    }
 
-        field.Process("dbo.usp_Report_Test",
-            P.Field("FromDate"),
-            P.Field("BranchId"));
+    public override void ConfigureProcessing(ProcessingBuilder processing)
+    {
+        // dbo.usp_Report_Test_Multi trả 2 bảng (0 = tổng hợp, 1 = chi tiết) -
+        // TableId(...) bắt buộc, chọn bảng 1 lên Grid. Tham số đặt tên theo đúng
+        // tên field Filter (@FromDate, @BranchId), không phải @p0/@p1 vị trí.
+        processing.TableId(1);
+        processing.Sql("EXEC dbo.usp_Report_Test_Multi @FromDate, @BranchId");
     }
 
     // Optional - không override thì field tự full-width theo đúng thứ tự ở ConfigureFilter.

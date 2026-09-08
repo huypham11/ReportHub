@@ -74,12 +74,15 @@ ReportHub/
 // Filter/RPT_XXX.cs
 public partial class XxxController : ControllerDefinitionBase
 {
-    public XxxController() => Name = "Tên report";
-
     public override void ConfigureFilter(FieldBuilder field)
     {
         field.Filter("FromDate", "Từ ngày", FieldType.Date).Required();
-        field.Process("dbo.usp_Xxx", P.Field("FromDate"), P.Value(3));
+    }
+
+    public override void ConfigureProcessing(ProcessingBuilder processing)
+    {
+        processing.TableId(0);
+        processing.Sql("EXEC dbo.usp_Xxx @FromDate");
     }
 
     public override void ConfigureView(ViewBuilder view)
